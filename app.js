@@ -28,5 +28,10 @@ app.use(fileUpload())
 
 app.listen(port, () =>
 {
-    console.log('Servidor corriendo en: \n "http://localhost:'+port+'"');
+    console.log('Servidor corriendo en: \n "http://localhost:'+port+'"')
+})
+
+app.get('/', (req, res) =>
+{
+    res.render('/public/index.html')
 })
