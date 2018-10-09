@@ -2,41 +2,71 @@ const crypto = require('crypto')
 
 var Cryptos =
 {
-    /*
-        algorthim: aes128, aes196, aes256
-    */
+    algorthim:
+    {
+        AES128: 'aes128',
+        AES196: 'aes196',
+        AES256: 'aes256'
+    },
+
     crypt: (text, key, algorthim) =>
     {
+        if (algorthim != 'aes128' && algorthim != 'aes196' && algorthim != 'aes256') return null
+        else
+        {
+            let bytes = algorthim == 'aes128'? 16 : algorthim == 'aes196'? 24 : 32,
+                iv = crypto.pseudoRandomBytes (16)
 
-    }
-    console.log('> Orifinal es:')
-    console.log(text)
-    console.log('\n')
+            console.log('> Original es:')
+            console.log(text)
+            console.log('\n')
 
-    var key = setAutoPadding(key, 32)
-    console.log('> Aqui es donde vale verga')
-    var cipher = crypto.createCipheriv(algorthim, key, iv)
+            key = Cryptos.setAutoPadding(key, bytes)
 
-    console.log('> Aqui ya no :3')
-    cipher.setAutoPadding(true)
+            const cipher = crypto.createCipheriv(algorthim, key, iv)
 
-    let encrypted = cipher.update(text, 'utf8', 'hex')
-    encrypted += cipher.final('hex')
-    console.log('> Encriptado es:')
-    console.log(encrypted)
-    console.log('\n')
-    // Prints: ca981be48e90867604588e75d04feabb63cc007a8f8ad89b10616ed84d815504
+            let encrypted = cipher.update(text, 'utf8', 'hex')
+            encrypted += cipher.final('hex')
 
-    var decipher = crypto.createDecipheriv(algorthim, key, iv)
+            console.log('> Encriptado es:')
+            console.log(encrypted)
+            console.log('\n')
 
-    decipher.setAutoPadding(true)
+            return encrypted
+        }
+    },
 
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8')
-    decrypted += decipher.final('utf8')
-    console.log('> Desencriptado es:')
-    console.log(decrypted)
-    console.log('\n')
+    decrypt: (encrypted, key, algorthim) =>
+    {
+        if (algorthim != 'aes128' && algorthim != 'aes196' && algorthim != 'aes256') return null
+        else
+        {
+            console.log('> Encriptado es 1:')
+            console.log(encrypted)
+            console.log('\n')
 
+            let tempEncrypted = Cryptos.bufferize(encrypted)
+
+            let bytes = algorthim == 'aes128'? 16 : algorthim == 'aes196'? 24 : 32,
+                iv = tempEncrypted.slice(0, 16),
+                textEncrypted = tempEncrypted.slice(16)
+
+            key = Cryptos.setAutoPadding(key, bytes)
+            const decipher = crypto.createDecipheriv(algorthim, key, iv)
+
+            let decrypted = decipher.update(textEncrypted, 'hex', 'utf8')
+console.log('jala x3')
+            decrypted += decipher.final('utf8')
+console.log('jala x4')
+            console.log('> Desencriptado es:')
+            console.log(decrypted)
+            console.log('\n')
+        }
+    },
+
+    /*
+        Important: Us setAutoPadding need stay before of crypto.createCipheriv()
+    */
     setAutoPadding: (key, multiply) =>
     {
         if (key.length % multiply == 0) return key
@@ -44,18 +74,22 @@ var Cryptos =
         {
             console.log('no es multiplo la llave mandada')
             for (var i = key.length; key.length % multiply != 0; i++)
-                key += randomChar()
+                key += Cryptos.randomChar()
             return key
         }
-    }
+    },
 
     randomChar: () =>
     {
         var possible = "abcdefghijklmnopqrstuvwxyz0123456789"
         return possible.charAt(Math.floor(Math.random() * possible.length))
-    }
+    },
 
-}) ()
+    bufferize: (str) =>
+    {
+        return new Buffer.from(str)
+    }
+}
 
 module.exports = Cryptos
 
