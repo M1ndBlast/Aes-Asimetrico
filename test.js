@@ -1,20 +1,28 @@
 const crypto = require('crypto')
 
 var text = 'some clear text data some clear text data, ya funciona el puñetero padding',
-    key = '123456789012345678901234',
+    key = '1234567890123456789012',
     iv = crypto.pseudoRandomBytes (16),
-    algorthim = 'aes192'
-console.log('Orifinal es:')
-console.log(text);
+    algorthim = 'aes256'
 
+
+
+console.log('> Orifinal es:')
+console.log(text)
+console.log('\n')
+
+var key = setAutoPadding(key, 32)
+console.log('> Aqui es donde vale verga')
 var cipher = crypto.createCipheriv(algorthim, key, iv)
 
+console.log('> Aqui ya no :3')
 cipher.setAutoPadding(true)
 
 let encrypted = cipher.update(text, 'utf8', 'hex')
 encrypted += cipher.final('hex')
-console.log('Encriptado es:')
+console.log('> Encriptado es:')
 console.log(encrypted)
+console.log('\n')
 // Prints: ca981be48e90867604588e75d04feabb63cc007a8f8ad89b10616ed84d815504
 
 var decipher = crypto.createDecipheriv(algorthim, key, iv)
@@ -23,8 +31,15 @@ decipher.setAutoPadding(true)
 
 let decrypted = decipher.update(encrypted, 'hex', 'utf8')
 decrypted += decipher.final('utf8')
-console.log('Desencriptado es:')
+console.log('> Desencriptado es:')
 console.log(decrypted)
+console.log('\n')
+
+
+
+
+
+
 // Prints: some clear text data
 
 //                      Aqui esta peor que arriba
@@ -150,3 +165,22 @@ console.log(decrypted)
 //
 // console.log('Finalmente salio:')
 // console.log(encData, decData)
+
+
+function setAutoPadding(key, multiply)
+{
+    if (key.length % multiply == 0) return key
+    else
+    {
+        console.log('no es multiplo la llave mandada')
+        for (var i = key.length; key.length % multiply != 0; i++)
+            key += randomChar()
+        return key
+    }
+}
+
+function randomChar()
+{
+    var possible = "abcdefghijklmnopqrstuvwxyz0123456789"
+    return possible.charAt(Math.floor(Math.random() * possible.length))
+}
