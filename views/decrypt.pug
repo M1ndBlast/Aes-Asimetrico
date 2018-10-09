@@ -1,0 +1,7 @@
+extends layout
+
+append content
+    form(method='post' action='/desencriptando')
+        input(type='text' name='text' placeholder='Contenid para encriptar' max-length='500' required)
+        input(type='text' name='pass' placeholder='Llave' max-length='32' required)
+        input(type='submit' value='Desencriptar')
